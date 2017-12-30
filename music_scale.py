@@ -17,16 +17,25 @@ OCTAVE_NOTES = {
     "bb":11,
     "b":12,
 }
+TWELFTH_ROOT_OF_2 = 2**(1/float(12))
+A4_FREQUENCY = 440
+
+def note_to_frequency(note_and_octave):
+    half_steps = note_half_steps_from_a(note_and_octave)
+    return A4_FREQUENCY * TWELFTH_ROOT_OF_2 ** half_steps
+
 
 def split_note(note_and_octave):
     characters = list(note_and_octave)
-    octave = characters.pop()
+    octave = int(characters.pop())
     note = ''.join(characters)
     return { "note": note, "octave": octave}
 
-def note_half_steps_from_a(note):
-    note = note.lower()
-    note_index = OCTAVE_NOTES[note]
+def note_half_steps_from_a(note_and_octave):
+    note_and_octave = note_and_octave.lower()
+    note_and_octave = split_note(note_and_octave)
+
+    note_index = OCTAVE_NOTES[note_and_octave['note']]
     a_index = OCTAVE_NOTES['a']
-    print note_index - a_index
-    return note_index - a_index
+    octave_modifier = 12 * (note_and_octave['octave'] - 4)
+    return note_index - a_index + octave_modifier
