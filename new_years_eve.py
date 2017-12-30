@@ -1,32 +1,15 @@
 #!/usr/bin/env python
 import RPi.GPIO as GPIO
 import time
+import music_scale
 
 BuzzerPin = 10    # pin10
 
-SPEED = 1 
-
-# List of tone-names with frequency
-TONES = {"c6":1047,
-	"b5":987.8,
-	"a5":880,
-	"g5":784,
-	"f5":698.5,
-	"e5":659.3,
-	"eb5":622.3,
-	"d5":587.3,
-	"c5":523.3,
-	"b4":493.9,
-	"a4":440,
-	"ab4":415.3,
-	"g4":392,
-	"f4":349.2,
-	"e4":329.6,
-	"d4":293.7,
-	"c4":261.6}
+SPEED = 1
 
 # Song is a list of tones with name and 1/duration. 16 means 1/16
 SONG =	[
+	["a4",4],
 	["e5",16],["eb5",16],
 	["e5",16],["eb5",16],["e5",16],["b4",16],["d5",16],["c5",16],
 	["a4",8],["p",16],["c4",16],["e4",16],["a4",16],
@@ -41,24 +24,36 @@ def setup():
 	GPIO.setmode(GPIO.BOARD) # Numbers GPIOs by physical location
 	GPIO.setup(BuzzerPin, GPIO.OUT)
 
-def playTone(p,tone):
-        # calculate duration based on speed and tone-length
-	duration = (1./(tone[1]*0.25*SPEED))
-
-	if tone[0] == "p": # p => pause
+def play_note=(player, frequency, duration):
+	if frequency == 'p': # p => pause
 		time.sleep(duration)
-	else: # let's rock
-		frequency = TONES[tone[0]]
-		p.ChangeFrequency(frequency)
-		p.start(0.5)
+	else:
+		player.ChangeFrequency(frequency)
+		player.start(duration)
 		time.sleep(duration)
 		p.stop()
 
 def run():
-	p = GPIO.PWM(BuzzerPin, 440)
-	p.start(0.5)
-	for t in SONG:
-		playTone(p,t)
+	music = map(frequency_and_duration(SONG))
+	first_note_played = false
+	player = false
+
+	for note in SONG:
+		if first_note_played
+			play_note(player, note['frequency'], note['duration'])
+		else
+			player = GPIO.PWM(BuzzerPin, note['frequency'])
+			player.start(note['duration'])
+
+
+def frequency_and_duration(note_and_duration):
+	return {
+		'frequency': music_scale.note_to_frequency(note_and_duration[0])
+		'duration': duration(note_and_duration[1])
+	}
+
+def duration(denominator):
+	return (1./(denominator*0.25*SPEED))
 
 def destroy():
 	GPIO.output(BuzzerPin, GPIO.HIGH)
@@ -68,6 +63,6 @@ if __name__ == '__main__':     # Program start from here
 	setup()
 	try:
 		run()
-                GPIO.cleanup()
+        GPIO.cleanup()
 	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
 		destroy()
