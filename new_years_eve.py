@@ -21,34 +21,41 @@ SONG =	[
 	]
 
 def setup():
+	#GPIO.cleanup()
 	GPIO.setmode(GPIO.BOARD) # Numbers GPIOs by physical location
 	GPIO.setup(BuzzerPin, GPIO.OUT)
 
-def play_note=(player, frequency, duration):
-	if frequency == 'p': # p => pause
+def play_note(player, frequency, duration):
+	if frequency == 0: #p => pause
+		print('resting for ' + str(duration))
 		time.sleep(duration)
 	else:
 		player.ChangeFrequency(frequency)
 		player.start(duration)
 		time.sleep(duration)
-		p.stop()
+		player.stop()
 
 def run():
-	music = map(frequency_and_duration(SONG))
-	first_note_played = false
-	player = false
+	music = map(frequency_and_duration, SONG)
+	first_note_played = False
+	player = False
 
-	for note in SONG:
-		if first_note_played
+	for note in music:
+		if first_note_played:
+			print("playing another note")
 			play_note(player, note['frequency'], note['duration'])
-		else
+		else:
+			print("playing first note")
+			first_note_played = True			
 			player = GPIO.PWM(BuzzerPin, note['frequency'])
 			player.start(note['duration'])
+			
+			time.sleep(note['duration'])
 
 
 def frequency_and_duration(note_and_duration):
 	return {
-		'frequency': music_scale.note_to_frequency(note_and_duration[0])
+		'frequency': music_scale.note_to_frequency(note_and_duration[0]),
 		'duration': duration(note_and_duration[1])
 	}
 
@@ -57,12 +64,12 @@ def duration(denominator):
 
 def destroy():
 	GPIO.output(BuzzerPin, GPIO.HIGH)
-	GPIO.cleanup()                     # Release resource
+	GPIO.cleanup()             # Release resource
 
 if __name__ == '__main__':     # Program start from here
 	setup()
 	try:
 		run()
-        GPIO.cleanup()
+		GPIO.cleanup()
 	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
 		destroy()

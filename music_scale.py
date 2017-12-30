@@ -22,7 +22,8 @@ A4_FREQUENCY = 440
 
 def note_to_frequency(note_and_octave):
     if note_and_octave.lower() == 'p':
-        return 'p' # this is a rest
+        return 0
+		# return 'p' # this is a rest
     else:
         half_steps = note_half_steps_from_a(note_and_octave)
         return A4_FREQUENCY * TWELFTH_ROOT_OF_2 ** half_steps
