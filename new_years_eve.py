@@ -5,7 +5,7 @@ import music_scale
 
 BuzzerPin = 10    # pin10
 
-SPEED = 1
+SPEED = 2
 
 # Song is a list of tones with name and 1/duration. 16 means 1/16th note
 # 16 = sixteenth note
